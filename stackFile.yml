@@ -1,0 +1,58 @@
+version: '1.0'
+services:
+  - name: db
+    type: percona
+    version: 5.7
+    configuration: MasterSlave
+    username: null
+    userPassword: null
+    password: null
+    ports:
+      - 3306
+    remoteAccess: false
+    comments:
+        username: Database will be created with the same name.
+    deployTo:
+      - main
+      - secondary
+
+  - name: pma
+    type: php
+    version: 7.1
+    source:
+      type: git
+      url: https://github.com/phpmyadmin/phpmyadmin
+      version: STABLE
+    extensions:
+      - mysqli
+      - opcache
+    configFiles:
+      - dest: $MAIN_PATH/config.inc.php
+        src: ./configs/config.inc.php
+    localDeps: composer install
+    deployTo:
+      - main
+
+  - name: web
+    type: nginx
+    version: 1.13
+    ports:
+      - 80
+      - 443
+    remoteAccess: true
+    serviceFiles:
+      - name: pma
+        static: true
+    deployTo:
+      - main
+
+hosts:
+  - name: main
+    requirements:
+      cores: 1
+      memory: 1
+
+  - name: secondary
+    requirements:
+      cores: 1
+      memory: 1
