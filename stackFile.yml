@@ -5,6 +5,7 @@ services:
     version: 5.7
     configuration: MasterSlave
     username: null
+    database: null
     userPassword: null
     password: null
     ports:
@@ -35,7 +36,7 @@ services:
 
   - name: web
     type: nginx
-    version: 1.13
+    version: 1.14
     ports:
       - 80
       - 443
